@@ -5,6 +5,8 @@ using System.Text;
 using System.Threading.Tasks;
 using System.IO;
 using System.Diagnostics;
+using System.Runtime.InteropServices;
+using System.Xml.Serialization;
 
 namespace ReadMe_Generator
 {
@@ -16,13 +18,13 @@ namespace ReadMe_Generator
         private const string LOGO_HOLDER = "<!-i128-!>";
         private const string SHORT_DESCRIPTION_HOLDER = "<!-sdsc-!>";
         private const string RELEASE_LINK_HOLDER = "<!-releaselink-!>";
-        private const string INSTALL_ISTRUCTION_HOLDER = "<!-INSTALLSETTINGS-!>";
         private const string SOLUTION_NAME_HOLDER = "<!-solutionmame-!>";
+        private const string INSTALL_ISTRUCTION_HOLDER = "<!-INSTALLSETTINGS-!>";
         private static readonly string configFilePath = Environment.CurrentDirectory + "\\config.ini";
         private static readonly string baseTemplatePath = Environment.CurrentDirectory + "\\Template\\Base.md";
         private static readonly DirectoryInfo InstallTemplateDirectory = new DirectoryInfo(Environment.CurrentDirectory + "\\Template\\Install\\");
         private static InstallTemplateClass[] installTemplateFiles;
-        private static string userName, reposName, appName, logoURL, shortDescription, releaseLink, installIstruction;
+        private static string userName, reposName, appName, logoURL, shortDescription, releaseLink, installIstruction, solutionName;
 
 
         private static string SetUsername()
@@ -37,7 +39,23 @@ namespace ReadMe_Generator
             File.WriteAllText(configFilePath, userName);
             return userName;
         }
-        private static string ParseHolder(string value) => value.Replace(USER_HOLDER, userName).Replace(REPOS_HOLDER, reposName).Replace(APP_NAME_HOLDER, appName).Replace(LOGO_HOLDER, logoURL).Replace(SHORT_DESCRIPTION_HOLDER, shortDescription).Replace(RELEASE_LINK_HOLDER, releaseLink).Replace(INSTALL_ISTRUCTION_HOLDER, installIstruction);
+        private static string ParseHolder(string value) => value.Replace(INSTALL_ISTRUCTION_HOLDER, installIstruction).Replace(SOLUTION_NAME_HOLDER, solutionName).Replace(RELEASE_LINK_HOLDER, releaseLink).Replace(SHORT_DESCRIPTION_HOLDER, shortDescription).Replace(LOGO_HOLDER, logoURL).Replace(APP_NAME_HOLDER, appName).Replace(REPOS_HOLDER, reposName).Replace(USER_HOLDER, userName);
+        private static int ChooseInstallTemplate(bool mandatoryChoose = false)
+        {
+            Console.WriteLine("-------------------------------");
+            WriteWithColor("0. None", mandatoryChoose == true ? ConsoleColor.Gray : Console.ForegroundColor, true);
+            for (int i = 0; i < installTemplateFiles.Length; i++) Console.WriteLine($"{i + 1}. {installTemplateFiles[i].Name}");
+            while(true)
+            {
+                Console.Write("Choose: ");
+                if(int.TryParse(Console.ReadLine(), out int choice))
+                {
+                    choice--;
+                    if (mandatoryChoose && choice > -1 && choice < installTemplateFiles.Length) return choice;
+                    else if (!mandatoryChoose && choice > -2 && choice < installTemplateFiles.Length) return choice;
+                }
+            }
+        }
         private static void WriteAtCenter(string text)
         {
             Console.SetCursorPosition((Console.WindowWidth - text.Length) / 2, Console.CursorTop);
@@ -95,7 +113,6 @@ namespace ReadMe_Generator
                 {
                     switch (reply)
                     {
-                        case 0: return;
                         case 1:
                             Console.Write("Insert your repository name: ");
                             reposName = Console.ReadLine();
@@ -112,7 +129,9 @@ namespace ReadMe_Generator
                             shortDescription = Console.ReadLine();
                             Console.Write("Insert the latest prebuilt binary release direct link: ");
                             releaseLink = Console.ReadLine();
-
+                            Console.Write("Insert the main solution file name without his extension(Ex. Solution1.sln -> Solution1): ");
+                            solutionName = Console.ReadLine();
+                            installIstruction = installTemplateFiles[ChooseInstallTemplate(true)].Text;
                             break;
                         case 2:
                             Console.Clear();
@@ -120,6 +139,7 @@ namespace ReadMe_Generator
                             Console.Write("1. Change username\n2. Change default install template\n3. Reset all settings\nChoose: ");
                             throw new NotImplementedException();
                             break;
+                        case 0: return;
                         default: redo = true; break;
                     }
                 }
