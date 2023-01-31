@@ -21,7 +21,8 @@ namespace ReadMe_Generator
         private static readonly string configFilePath = Environment.CurrentDirectory + "\\config.ini";
         private static readonly string baseTemplatePath = Environment.CurrentDirectory + "\\Template\\Base.md";
         private static readonly DirectoryInfo InstallTemplateDirectory = new DirectoryInfo(Environment.CurrentDirectory + "\\Template\\Install\\");
-        private static string userName, reposName, appName, logoURL;
+        private static InstallTemplateClass[] installTemplateFiles;
+        private static string userName, reposName, appName, logoURL, shortDescription, releaseLink, installIstruction;
 
 
         private static string SetUsername()
@@ -36,6 +37,7 @@ namespace ReadMe_Generator
             File.WriteAllText(configFilePath, userName);
             return userName;
         }
+        private static string ParseHolder(string value) => value.Replace(USER_HOLDER, userName).Replace(REPOS_HOLDER, reposName).Replace(APP_NAME_HOLDER, appName).Replace(LOGO_HOLDER, logoURL).Replace(SHORT_DESCRIPTION_HOLDER, shortDescription).Replace(RELEASE_LINK_HOLDER, releaseLink).Replace(INSTALL_ISTRUCTION_HOLDER, installIstruction);
         private static void WriteAtCenter(string text)
         {
             Console.SetCursorPosition((Console.WindowWidth - text.Length) / 2, Console.CursorTop);
@@ -72,14 +74,18 @@ namespace ReadMe_Generator
                 Console.ReadKey();
                 Environment.Exit(1);
             }
-
+            else
+            {
+                FileInfo[] files = InstallTemplateDirectory.GetFiles("*.itml");
+                installTemplateFiles = new InstallTemplateClass[files.Length];
+                for (int i = 0; i < files.Length; i++) installTemplateFiles[i] = new InstallTemplateClass(files[i]);
+            }
 
             bool redo;
             do
             {
                 redo = false;
                 Console.Clear();
-                Console.Title = "ReadMe Generator - Main Menu";
                 WriteAtCenter("GitHub ReadMe Template Generator");
                 Console.Write("Hi ");
                 WriteWithColor(userName, ConsoleColor.Yellow);
@@ -91,11 +97,25 @@ namespace ReadMe_Generator
                     {
                         case 0: return;
                         case 1:
-                            Console.Title = "ReadMe Generator - Generator";
+                            Console.Write("Insert your repository name: ");
+                            reposName = Console.ReadLine();
+                            Console.Write("Insert your Application name: ");
+                            appName = Console.ReadLine();
+                            Console.Write("Do you want to use a custom logo URL? [y/N]: ");
+                            if (Console.ReadKey().Key == ConsoleKey.Y)
+                            {
+                                Console.Write("Make sure that this is a raw URL!\nif using GitHub, for example, check that the link is like this:\nhttps://github.com/$username/$reposname/blob/main/$custompath/Logo.png?raw=true\nInsert your custom URL: ");
+                                logoURL = $"<img src=\"{Console.ReadLine()}\" alt=\"Logo\" width=\"80\" height=\"80\">";
+                            }
+                            else logoURL = ParseHolder("<img src=\"https://github.com/<!-p-!>/<!-p-!>/blob/main/Assets/<!-r-!>/Logo.png?raw=true\" alt=\"Logo\" width=\"80\" height=\"80\">");
+                            Console.Write("Insert a short description about the project: ");
+                            shortDescription = Console.ReadLine();
+                            Console.Write("Insert the latest prebuilt binary release direct link: ");
+                            releaseLink = Console.ReadLine();
+
                             break;
                         case 2:
                             Console.Clear();
-                            Console.Title = "ReadMe Generator - Preferences";
                             WriteAtCenter("Preferences\n");
                             Console.Write("1. Change username\n2. Change default install template\n3. Reset all settings\nChoose: ");
                             throw new NotImplementedException();
