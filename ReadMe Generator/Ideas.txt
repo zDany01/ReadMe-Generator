@@ -1,0 +1,41 @@
+<!-p-!> Profile name
+<!-r-!> repository name
+<!-n-!> App name
+<!-i128-!> main logo png, before a simple description (Must be 128x128)
+!! Scelta
+1. Use the default
+(
+    <img src="https://github.com/<!-p-!>/<!-p-!>/blob/main/Assets/<!-r-!>/Logo.png?raw=true" alt="Logo" width="80" height="80">
+)
+2. Custom path in repository
+(
+<img src="https://github.com/<!-p-!>/<!-r-!>/blob/main/$custompath/Logo.png?raw=true" alt="Logo" width="80" height="80">
+)
+<!-sdsc-!> short description
+
+
+//LDWM long description write manaully
+//HTUD How to use description
+
+<!-releaselink-!> link to latest binary
+
+<!-INSTALLSETTINGS-!>{
+Ask for installation type and search for directory
+create template for:
+1. Visual studio(.NET)
+2. Intellij
+}
+|| Internal variable from
+\/
+<!-solutionmame-!> .sln file name/Intellij Folder
+
+
+//MANUALLY WRITE HOW TO USE
+
+
+//Required file to upload
+Logo.png main app logo
+AppInterface.png main interface
+TextLogo.png text logo (x max 1000; y 95-110) generate from https://cooltext.com/Logo-Design-Keen
+
+

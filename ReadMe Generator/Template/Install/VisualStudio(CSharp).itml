@@ -1,0 +1,10 @@
+Visual Studio CSharp Project
+
+1. Download Microsoft [Visual Studio Community](https://visualstudio.microsoft.com) Edition
+2. Check the ***.NET Desktop Developer*** box and click install
+3. Clone(or [download](https://github.com/<!-p-!>/<!-r-!>/archive/refs/heads/main.zip)) this repository:
+   ```sh
+   git clone https://github.com/<!-p-!>/<!-r-!>.git
+   ```
+4. Open the project directory and run the `<!-solutionmame-!>.sln` file, this will fire up Visual Studio and automatically open the project
+5. Now you can compile or review the source code and make any modification you want within Visual Studio
