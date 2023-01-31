@@ -12,7 +12,7 @@
 <br/>
 <div align="center">
   <a href="https://github.com/<!-p-!>/<!-r-!>">
-    <!-i128-!>
+    <img src="<!-i128-!>" alt="Logo" width="80" height="80">
   </a>
 
 <h3 align="center"><!-n-!></h3>
@@ -34,7 +34,7 @@
 ![Product Name Screen Shot][product-screenshot]
 <br/>
 
-//LDWM
+//LONG DESCRIPTION WRITE MANUALLY
 
 
 For more information about using this app, go to the [How to use](#how-to-use) section.
