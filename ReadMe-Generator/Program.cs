@@ -31,7 +31,7 @@ namespace ReadMe_Generator
         private static bool customURL;
 
 
-        private static string SetUsername()
+        private static string AskUsername()
         {
             string userName;
             do
@@ -119,7 +119,7 @@ namespace ReadMe_Generator
         }
         static void Main()
         {
-            userName = File.Exists(configFilePath) ? File.ReadAllLines(configFilePath)[0] : SetUsername();
+            userName = File.Exists(configFilePath) ? File.ReadAllLines(configFilePath)[0] : AskUsername();
 
             if (!File.Exists(baseTemplatePath) || !InstallTemplateDirectory.Exists || InstallTemplateDirectory.GetFiles("*.itml").Length == 0)
             {
@@ -197,6 +197,7 @@ namespace ReadMe_Generator
                             GenerateText();
                             break;
                         case 2:
+                            #region "Preferences Menu"
                             bool preferencerestart;
                             do
                             {
@@ -208,15 +209,15 @@ namespace ReadMe_Generator
                                 {
                                     switch (choice)
                                     {
-                                        case 1: SetUsername(); break;
-                                        case 2: break;
+                                        case 1: userName = AskUsername(); break;
+                                        case 2: throw new NotImplementedException(); break;
                                         case 3: File.Delete(configFilePath); Process.Start(Assembly.GetExecutingAssembly().Location); Environment.Exit(0); break;
-                                        case 0: redo = false; break;
+                                        case 0: preferencerestart = false; break;
                                     }
                                 }
                             } while (preferencerestart);
-
                             break;
+                        #endregion
                         case 0: redo = false; break;
                     }
                 }
