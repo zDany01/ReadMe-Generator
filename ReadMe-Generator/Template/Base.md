@@ -51,7 +51,6 @@ You can download the latest precompiled version of the program [here](<!-release
 <br><br>
 
 ## How to use
-***NOTE: Saving and Loading profiles should be done ONLY when minecraft is closed!***
 <div align=center>
 
 ![AppInterface](https://github.com/<!-p-!>/<!-p-!>/blob/main/Assets/<!-r-!>/AppInterface.png?raw=true)

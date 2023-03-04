@@ -8,6 +8,7 @@ using System.Diagnostics;
 using System.Runtime.InteropServices;
 using System.Xml.Serialization;
 using System.Globalization;
+using System.Reflection;
 
 namespace ReadMe_Generator
 {
@@ -27,6 +28,7 @@ namespace ReadMe_Generator
         private static InstallTemplateClass[] installTemplateFiles;
         private static InstallTemplateClass installIstruction;
         private static string userName, reposName, appName, logoURL, shortDescription, releaseLink, solutionName;
+        private static bool customURL;
 
 
         private static string SetUsername()
@@ -52,8 +54,7 @@ namespace ReadMe_Generator
                 Console.Write("Choose: ");
                 if (int.TryParse(Console.ReadLine(), out int choice))
                 {
-                    choice--;
-                    if (mandatoryChoose && choice > -1 && choice < installTemplateFiles.Length) return choice;
+                    if (mandatoryChoose && --choice > -1 && choice < installTemplateFiles.Length) return choice;
                     else if (!mandatoryChoose && choice > -2 && choice < installTemplateFiles.Length) return choice;
                 }
             }
@@ -108,12 +109,13 @@ namespace ReadMe_Generator
             }
             WriteWithColor("ReadMe successfully generated!", ConsoleColor.Green, true);
             WriteWithColor("Parsing user data holders...", ConsoleColor.Yellow, true);
-            for(int i = 0; i < generatedReadMe.Count; i++) generatedReadMe[i] = ParseUserDataHolder(generatedReadMe[i]);
+            for (int i = 0; i < generatedReadMe.Count; i++) generatedReadMe[i] = ParseUserDataHolder(generatedReadMe[i]);
             Console.WriteLine("Generating file...");
             string generatedFilePath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.DesktopDirectory), "README.md");
             File.WriteAllLines(generatedFilePath, generatedReadMe);
             WriteWithColor($"File successfully generated at {generatedFilePath}", ConsoleColor.Green, true);
             Console.WriteLine("Press a key to continue...");
+            Console.ReadKey();
         }
         static void Main()
         {
@@ -148,7 +150,7 @@ namespace ReadMe_Generator
             bool redo;
             do
             {
-                redo = false;
+                redo = true;
                 Console.Clear();
                 WriteAtCenter("GitHub ReadMe Template Generator");
                 Console.Write("Hi ");
@@ -166,7 +168,8 @@ namespace ReadMe_Generator
                             Console.Write("Insert your Application name: ");
                             appName = Console.ReadLine();
                             Console.Write("Do you want to use a custom logo URL? [y/N]: ");
-                            if (Console.ReadKey().Key == ConsoleKey.Y)
+                            customURL = Console.ReadKey().Key == ConsoleKey.Y;
+                            if (customURL)
                             {
                                 Console.Write("\nMake sure that this is a raw URL!\nif using GitHub, for example, check that the link is like this:\nhttps://github.com/$username/$reposname/blob/main/$custompath/Logo.png?raw=true\nInsert your custom URL: ");
                                 logoURL = Console.ReadLine();
@@ -181,7 +184,7 @@ namespace ReadMe_Generator
                             installIstruction = installTemplateFiles[ChooseInstallTemplate(true)];
                             Console.Clear();
                             WriteAtCenter("Report");
-                            Console.WriteLine($"\nUser: {userName}\nRepository: {reposName}\nApp Name: {appName}\nLogo link: {ParseUserDataHolder(logoURL)}\nShort Description: {shortDescription}\nRelease link: {releaseLink}\nSolution file name: {solutionName}\nInstall Setting: {installIstruction.Name}\n\n\nMake sure that these files exist on your GitHub profile: Logo.png, TextLogo.png, AppInterface.png\nDo you wish to continue [Y/n]");
+                            Console.WriteLine($"\nUser: {userName}\nRepository: {reposName}\nApp Name: {appName}\nLogo link: {(customURL ? "Custom" : "Default")}\nShort Description: {shortDescription}\nRelease link: {releaseLink}\nSolution file name: {solutionName}\nInstall Setting: {installIstruction.Name}\n\n\nMake sure that these files exist on your GitHub profile:\nLogo link: {ParseUserDataHolder(logoURL)}\nTextLogo: {ParseUserDataHolder("https://github.com/<!-p-!>/<!-p-!>/blob/main/Assets/<!-r-!>/TextLogo.png?raw=true")}\nAppInterface: {ParseUserDataHolder("https://github.com/<!-p-!>/<!-p-!>/blob/main/Assets/<!-r-!>/AppInterface.png?raw=true")}\nDo you wish to continue [Y/n]");
                             if (Console.ReadKey().Key == ConsoleKey.N)
                             {
                                 reposName = appName = logoURL = shortDescription = releaseLink = solutionName = string.Empty;
@@ -192,22 +195,32 @@ namespace ReadMe_Generator
                             #endregion
                             WriteWithColor("\n\nStarting generating...", ConsoleColor.Blue, true);
                             GenerateText();
-                            redo = true;
                             break;
                         case 2:
-                            Console.Clear();
-                            WriteAtCenter("Preferences\n");
-                            Console.Write("1. Change username\n2. Change default install template\n3. Reset all settings\nChoose: ");
-                            throw new NotImplementedException();
+                            bool preferencerestart;
+                            do
+                            {
+                                preferencerestart = true;
+                                Console.Clear();
+                                WriteAtCenter("Preferences\n");
+                                Console.Write("1. Change username\n2. Change default install template\n3. Reset all settings\n0. Back\nChoose: ");
+                                if (int.TryParse(Console.ReadLine(), out int choice))
+                                {
+                                    switch (choice)
+                                    {
+                                        case 1: SetUsername(); break;
+                                        case 2: break;
+                                        case 3: File.Delete(configFilePath); Process.Start(Assembly.GetExecutingAssembly().Location); Environment.Exit(0); break;
+                                        case 0: redo = false; break;
+                                    }
+                                }
+                            } while (preferencerestart);
+
                             break;
-                        case 0: return;
-                        default: redo = true; break;
+                        case 0: redo = false; break;
                     }
                 }
-                else redo = true;
             } while (redo);
-
-            Console.ReadKey();
         }
     }
 }
