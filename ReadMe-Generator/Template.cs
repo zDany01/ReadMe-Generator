@@ -2,11 +2,11 @@
 
 namespace ReadMe_Generator
 {
-    internal class InstallTemplateClass
+    internal class Template
     {
         public string Name { get; private set; }
         public string Text { get; private set; }
-        public InstallTemplateClass(FileInfo templateFile)
+        public Template(FileInfo templateFile)
         {
             string[] fileContent = File.ReadAllLines(templateFile.FullName);
             Name = fileContent[0];
